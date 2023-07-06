@@ -40,7 +40,12 @@ jobs:
           echo "------------------------------------------------------"
 
           # echo "${{ github.event.release }}$(jq --raw-output .assets[]")
-          url="$(echo '${{ github.event.release }}' | jq 'select(.tag_name==$tag) | .assets[] | .browser_download_url')";
+          url="$(echo '${{ github.event.release }}' | jq 'select(.tag_name=="vscode-metaed.vsix") | .assets[] | .browser_download_url')";
+          echo url
+          url="$(echo '${{ github.event.release }}' | jq 'select(.tag_name==${tag}) | .assets[] | .browser_download_url')";
+          echo url
+          url="$(echo '${{ github.event.release }}' | jq 'select(.tag_name==$$tag) | .assets[] | .browser_download_url')";
+          echo url
 
           curl url --output file
 
