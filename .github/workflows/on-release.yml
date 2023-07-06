@@ -32,11 +32,16 @@ jobs:
         run: npm install --global @vscode/vsce
 
       - name: Retrieve VSIX from release
-        shell: pwsh
         run: |
-          $file = "vscode-metaed.vsix"
-          $url = "${{ github.event.release.assets[0].browser_download_url }}"
-          Invoke-RestMethod -Uri $url -Outfile $file
+          file="vscode-metaed.vsix"
+          tag="${{ github.ref_name }}"
+
+          echo "${{ github.event.release }}"
+          echo "------------------------------------------------------"
+
+          url=$(jq --raw-output select(.tag_name==$tag) | .assets[] | .browser_download_url "${{ github.event.release }}")
+
+          curl url --output file
 
       - name: Publish to the marketplace
         run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix        
