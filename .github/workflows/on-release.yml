@@ -20,9 +20,8 @@ jobs:
     steps:
       - name: Check if generated from pre-release
         if: github.event.release.assets[0] == null
-        shell: pwsh
         run: |
-          Write-Output "Release must be generated from pre-release. More information: https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/docs/DEVELOPMENT.md#release "
+          echo "Release must be generated from pre-release. More information: https://github.com/Ed-Fi-Alliance-OSS/vscode-metaed-ide/blob/main/docs/DEVELOPMENT.md#release "
           exit 1
       
       - name: Checkout repository
@@ -37,8 +36,7 @@ jobs:
           tag="${{ github.ref_name }}"
 
           url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
-          echo $url
           curl $url --output $file
 
       - name: Publish to the marketplace
-        run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix        
+        run: npx vsce publish --allow-star-activation --packagePath vscode-metaed.vsix   
