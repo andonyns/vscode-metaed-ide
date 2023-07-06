@@ -36,9 +36,10 @@ jobs:
           file="vscode-metaed.vsix"
           tag="${{ github.ref_name }}"
 
-          echo "${{ github.event.release }}"
+          echo ${{ github.event.release }}
           echo "------------------------------------------------------"
 
+          echo $(jq --raw-output .assets[] "${{ github.event.release }}")
           url=$(jq --raw-output select(.tag_name==$tag) | .assets[] | .browser_download_url "${{ github.event.release }}")
 
           curl url --output file
