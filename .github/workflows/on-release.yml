@@ -36,7 +36,6 @@ jobs:
           file="vscode-metaed.vsix"
           tag="${{ github.ref_name }}"
 
-          echo ${{ toJson(github.event.release) }}
           echo "------------------------------------------------------"
 
           url="$(echo '${{ toJson(github.event.release) }}' | jq '.assets[]')"
