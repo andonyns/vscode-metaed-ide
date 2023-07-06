@@ -37,6 +37,7 @@ jobs:
           tag="${{ github.ref_name }}"
 
           url="$(echo '${{ toJson(github.event.release) }}' | jq --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')"
+          echo $url
           curl $url --output $file
 
       - name: Publish to the marketplace
