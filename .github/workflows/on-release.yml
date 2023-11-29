@@ -14,6 +14,7 @@ on:
 
 env:
   VSCE_PAT: ${{ secrets.VSCE_PAT }}
+  GITHUB_TOKEN: ${{ secrets.PAT_ATTACH_TO_RELEASE }}
 
 jobs:
   publish:
@@ -39,6 +40,33 @@ jobs:
 
           url=$(echo '${{ toJson(github.event.release) }}' | jq --raw-output --arg t "$tag" 'select(.tag_name==$t) | .assets[] | .browser_download_url')
           curl $url --fail --output $file
+
+      - name: Attach to release
+        shell: pwsh
+        run: |
+          $release = "${{ github.ref_name }}"
+          $repo = "${{ github.repository }}"
+          $token = "${{ env.GITHUB_TOKEN }}"
+          $uploadName = "vscode-metaed.vsix"
+
+          $url = "https://api.github.com/repos/$repo/releases/$release/assets"
+
+          $gh_headers = @{
+              "Accept"        = "application/vnd.github+json"
+              "Authorization" = "Bearer $token"
+          }
+
+          $response = Invoke-RestMethod -Uri $url -Headers $gh_headers
+          echo $response
+
+          $assetId = $response.id
+
+          $url = "https://uploads.github.com/repos/$repo/releases/assets/$assetId"
+
+          $gh_headers["Content-Type"] = "application/octet"
+          Invoke-RestMethod -Uri "$($url)?name=$($uploadName)" `
+              -Headers $gh_headers
+              -OutFile $uploadName
 
       - name: Publish to the marketplace
         run: |
