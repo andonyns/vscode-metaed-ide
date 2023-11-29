@@ -80,6 +80,8 @@ jobs:
           name: vscode-metaed.vsix
           path: vscode-metaed.vsix
           sha256: "${{ needs.package.outputs.hash-code }}"
+      
+      - run: cksum vscode-metaed.vsix
 
       - name: Attach to release
         shell: pwsh
